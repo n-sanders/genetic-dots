@@ -1,13 +1,15 @@
 class Dot {
-    constructor(x, y) {
+    constructor(x, y, brainSize) {
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
         this.acc = createVector(0, 0);
-        this.brain = new Array(400); // Genetic instructions
+        this.brain = new Array(brainSize); // Dynamic brain size
         this.dead = false;
         this.reachedGoal = false;
         this.isBest = false;
+        this.isLastGenBest = false;  // New property for last generation's best
         this.fitness = 0;
+        this.step = 0;  // Track current step
         
         // Initialize random directions
         for (let i = 0; i < this.brain.length; i++) {
@@ -17,17 +19,26 @@ class Dot {
     }
     
     show() {
-        fill(this.isBest ? 0 : 255);
+        if (this.isLastGenBest) {
+            fill(255, 255, 0);  // Yellow for last generation's best
+        } else if (this.isBest) {
+            fill(0);  // Black for current best
+        } else {
+            fill(255);  // White for regular dots
+        }
         ellipse(this.pos.x, this.pos.y, 8, 8);
     }
     
     move() {
         if (!this.dead && !this.reachedGoal) {
-            if (this.brain.length > 0) {
-                this.acc = this.brain[frameCount % this.brain.length];
+            if (this.step < this.brain.length) {
+                this.acc = this.brain[this.step];
                 this.vel.add(this.acc);
                 this.vel.limit(5);
                 this.pos.add(this.vel);
+                this.step++;
+            } else {
+                this.dead = true;  // Die if we've used all steps
             }
             
             // Check if hit walls
@@ -56,7 +67,7 @@ class Dot {
     }
     
     createBaby() {
-        let baby = new Dot(startPos.x, startPos.y);
+        let baby = new Dot(startPos.x, startPos.y, this.brain.length);
         baby.brain = [...this.brain];
         return baby;
     }

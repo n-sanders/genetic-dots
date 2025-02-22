@@ -25,6 +25,29 @@ function draw() {
     population.update();
     population.show();
     
+    // Display information
+    fill(0);
+    textSize(16);
+    textAlign(LEFT);
+    text(`Generation: ${population.gen}`, 10, 30);
+    text(`Brain Size: ${population.dots[0].brain.length} steps`, 10, 50);
+    text(`Best Fitness: ${population.bestFitness.toFixed(4)}`, 10, 70);
+    
+    // Display color legend
+    text('Colors:', 10, height - 80);
+    fill(255); // White
+    ellipse(30, height - 60, 8, 8);
+    fill(0);
+    text('Current', 45, height - 55);
+    
+    fill(0); // Black
+    ellipse(30, height - 40, 8, 8);
+    text('Best', 45, height - 35);
+    
+    fill(255, 255, 0); // Yellow
+    ellipse(30, height - 20, 8, 8);
+    text('Previous Best', 45, height - 15);
+    
     // If all dots are dead or reached goal
     if (population.allDotsDead()) {
         population.calculateFitness();
